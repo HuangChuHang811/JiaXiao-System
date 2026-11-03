@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.driving.mapper.ScoreMapper">
+
+    <resultMap id="scoreMap" type="com.driving.entity.Score">
+        <id column="id" property="id"/>
+        <result column="student_id" property="studentId"/>
+        <result column="coach_id" property="coachId"/>
+        <result column="subject" property="subject"/>
+        <result column="score" property="score"/>
+        <result column="pass" property="pass"/>
+        <result column="create_time" property="createTime"/>
+        <result column="student_name" property="studentName"/>
+        <result column="coach_name" property="coachName"/>
+    </resultMap>
+
+    <sql id="joinSql">
+        sc.id, sc.student_id, sc.coach_id, sc.subject, sc.score, sc.pass, sc.create_time,
+        s.name AS student_name, c.name AS coach_name
+        FROM score sc
+        LEFT JOIN student s ON sc.student_id = s.id
+        LEFT JOIN coach c ON sc.coach_id = c.id
+    </sql>
+
+    <select id="findById" resultMap="scoreMap">
+        SELECT <include refid="joinSql"/> WHERE sc.id = #{id}
+    </select>
+
+    <select id="findAll" resultMap="scoreMap">
+        SELECT <include refid="joinSql"/> ORDER BY sc.id DESC
+    </select>
+
+    <select id="findByStudentId" resultMap="scoreMap">
+        SELECT <include refid="joinSql"/> WHERE sc.student_id = #{studentId} ORDER BY sc.id DESC
+    </select>
+
+    <select id="findByCoachId" resultMap="scoreMap">
+        SELECT <include refid="joinSql"/> WHERE sc.coach_id = #{coachId} ORDER BY sc.id DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO score(student_id, coach_id, subject, score, pass, create_time)
+        VALUES(#{studentId}, #{coachId}, #{subject}, #{score}, #{pass}, NOW())
+    </insert>
+
+    <update id="update">
+        UPDATE score SET subject=#{subject}, score=#{score}, pass=#{pass} WHERE id=#{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM score WHERE id = #{id}
+    </delete>
+
+</mapper>

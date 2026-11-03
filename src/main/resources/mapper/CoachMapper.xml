@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.driving.mapper.CoachMapper">
+
+    <resultMap id="coachMap" type="com.driving.entity.Coach">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="name" property="name"/>
+        <result column="phone" property="phone"/>
+        <result column="subject" property="subject"/>
+    </resultMap>
+
+    <sql id="cols">id, username, password, name, phone, subject</sql>
+
+    <select id="findByUsername" resultMap="coachMap">
+        SELECT <include refid="cols"/> FROM coach WHERE username = #{username}
+    </select>
+
+    <select id="findById" resultMap="coachMap">
+        SELECT <include refid="cols"/> FROM coach WHERE id = #{id}
+    </select>
+
+    <select id="findAll" resultMap="coachMap">
+        SELECT <include refid="cols"/> FROM coach ORDER BY id DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO coach(username, password, name, phone, subject)
+        VALUES(#{username}, #{password}, #{name}, #{phone}, #{subject})
+    </insert>
+
+    <update id="update">
+        UPDATE coach SET name=#{name}, phone=#{phone}, subject=#{subject} WHERE id=#{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM coach WHERE id = #{id}
+    </delete>
+
+    <update id="updatePassword">
+        UPDATE coach SET password = #{password} WHERE id = #{id}
+    </update>
+
+</mapper>

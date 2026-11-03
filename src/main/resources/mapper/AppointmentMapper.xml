@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.driving.mapper.AppointmentMapper">
+
+    <resultMap id="appointMap" type="com.driving.entity.Appointment">
+        <id column="id" property="id"/>
+        <result column="student_id" property="studentId"/>
+        <result column="coach_id" property="coachId"/>
+        <result column="appoint_date" property="appointDate"/>
+        <result column="time_slot" property="timeSlot"/>
+        <result column="status" property="status"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+        <result column="student_name" property="studentName"/>
+        <result column="coach_name" property="coachName"/>
+    </resultMap>
+
+    <sql id="joinSql">
+        a.id, a.student_id, a.coach_id, a.appoint_date, a.time_slot, a.status, a.remark, a.create_time,
+        s.name AS student_name, c.name AS coach_name
+        FROM appoint a
+        LEFT JOIN student s ON a.student_id = s.id
+        LEFT JOIN coach c ON a.coach_id = c.id
+    </sql>
+
+    <select id="findById" resultMap="appointMap">
+        SELECT <include refid="joinSql"/> WHERE a.id = #{id}
+    </select>
+
+    <select id="findAll" resultMap="appointMap">
+        SELECT <include refid="joinSql"/>
+        <where>
+            <if test="status != null">AND a.status = #{status}</if>
+        </where>
+        ORDER BY a.id DESC
+    </select>
+
+    <select id="findByStudentId" resultMap="appointMap">
+        SELECT <include refid="joinSql"/>
+        <where>
+            a.student_id = #{studentId}
+            <if test="status != null">AND a.status = #{status}</if>
+        </where>
+        ORDER BY a.id DESC
+    </select>
+
+    <select id="findByCoachId" resultMap="appointMap">
+        SELECT <include refid="joinSql"/>
+        <where>
+            a.coach_id = #{coachId}
+            <if test="status != null">AND a.status = #{status}</if>
+        </where>
+        ORDER BY a.id DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO appoint(student_id, coach_id, appoint_date, time_slot, status, remark, create_time)
+        VALUES(#{studentId}, #{coachId}, #{appointDate}, #{timeSlot}, 0, '', NOW())
+    </insert>
+
+    <update id="update">
+        UPDATE appoint
+        SET status = #{status}, remark = #{remark}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM appoint WHERE id = #{id}
+    </delete>
+
+    <select id="checkConflict" resultMap="appointMap">
+        SELECT <include refid="joinSql"/>
+        WHERE a.coach_id = #{coachId} AND a.appoint_date = #{appointDate} AND a.time_slot = #{timeSlot} AND a.status IN (0, 1)
+    </select>
+
+</mapper>

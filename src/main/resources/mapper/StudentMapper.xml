@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.driving.mapper.StudentMapper">
+
+    <resultMap id="studentMap" type="com.driving.entity.Student">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="name" property="name"/>
+        <result column="phone" property="phone"/>
+        <result column="age" property="age"/>
+        <result column="subject" property="subject"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <sql id="cols">id, username, password, name, phone, age, subject, create_time</sql>
+
+    <select id="findByUsername" resultMap="studentMap">
+        SELECT <include refid="cols"/> FROM student WHERE username = #{username}
+    </select>
+
+    <select id="findById" resultMap="studentMap">
+        SELECT <include refid="cols"/> FROM student WHERE id = #{id}
+    </select>
+
+    <select id="findAll" resultMap="studentMap">
+        SELECT <include refid="cols"/> FROM student ORDER BY id DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO student(username, password, name, phone, age, subject, create_time)
+        VALUES(#{username}, #{password}, #{name}, #{phone}, #{age}, #{subject}, NOW())
+    </insert>
+
+    <update id="update">
+        UPDATE student SET name=#{name}, phone=#{phone}, age=#{age}, subject=#{subject} WHERE id=#{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM student WHERE id = #{id}
+    </delete>
+
+    <update id="updatePassword">
+        UPDATE student SET password = #{password} WHERE id = #{id}
+    </update>
+
+</mapper>
